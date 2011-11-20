@@ -18,23 +18,25 @@ sub setup_schema {
     open my $fh, '<:encoding(UTF-8)', $fname or die "$fname: $!";
     my $source = do { local $/; <$fh> };
     for my $stmt (split /;/, $source) {
+        next unless $stmt =~ /\S/;
         $dbh->do($stmt) or die $dbh->errstr();
     }
 }
 
 use Teng;
 use Teng::Schema::Loader;
+use MyBBS::DB;
 sub db {
     my $self = shift;
     if ( !defined $self->{db} ) {
         my $conf = $self->config->{'DBI'}
         or die "missing configuration for 'DBI'";
-        my $dbh = DBI->connect(@{$conf});
+        my $dbh = $self->dbh;
         my $schema = Teng::Schema::Loader->load(
             namespace => 'MyBBS::DB',
             dbh       => $dbh,
 	    );
-        $self->{db} = Teng->new(
+        $self->{db} = MyBBS::DB->new(
             dbh    => $dbh,
             schema => $schema,
 	    );
