@@ -1,0 +1,7 @@
+[% WRAPPER 'include/layout.tt' %]
+
+<section>
+    <h1>This is a MyBBS's admin site</h1>
+</section>
+
+[% END %]
