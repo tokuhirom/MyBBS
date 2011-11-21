@@ -8,7 +8,7 @@
 </form>
 
 [% FOR entry IN entries %]
-    [% entry.id %]. [% entry.body %]<br />
+    [% entry.id %]. [% entry.body %] [% entry.ctime_obj.strftime('%Y-%m-%d(%a) %H:%M') %]<br />
 [% END %]
 
 [% INCLUDE 'include/pager.tt' WITH pager=pager %]
