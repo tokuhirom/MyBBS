@@ -43,15 +43,21 @@
                     <input type="text" placeholder="Search">
                 </form>
                 <ul class="nav secondary-nav">
-                    <li class="dropdown">
-                    <a href="#" class="dropdown-toggle">Dropdown</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Secondary link</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">Another link</a></li>
-                    </ul>
-                    </li>
+                    [% IF c().session_member() %]
+                        <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">[% c().session_member().nickname() %]</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/account/logout">Logout</a></li>
+                        </ul>
+                        </li>
+                    [% ELSE %]
+                        <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">Login</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/auth/twitter/authenticate">login with Twitter</a></li>
+                        </ul>
+                        </li>
+                    [% END %]
                 </ul>
                 </div>
             </div><!-- /topbar-inner -->

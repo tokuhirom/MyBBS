@@ -50,6 +50,57 @@ __PACKAGE__->load_plugins(
     'Web::FillInFormLite',
     'Web::CSRFDefender',
 );
+use Log::Minimal;
+__PACKAGE__->load_plugin(
+    'Web::Auth' => {
+        module      => 'Twitter',
+        on_finished => sub {
+            my ($c, $access_token, $access_token_secret, $user_id, $screen_name)
+                                    = @_;
+            my $member = $c->db->single(
+                member => {
+                twitter_user_id => $user_id,
+                }
+            );
+            if (!$member) {
+                # register
+                $member = $c->db->insert(
+                    member => {
+                        nickname                    => $screen_name,
+                        twitter_access_token        => $access_token,
+                        twitter_access_token_secret => $access_token_secret,
+                        twitter_user_id             => $user_id,
+                        twitter_screen_name         => $screen_name,
+                        ctime                       => time(),
+                    }
+                );
+            }
+            $c->session->set(member_id => $member->id);
+            return $c->redirect;
+        },
+        on_error => sub {
+            my ( $c, $errmsg ) = @_;
+            critf( "Twitter error: %s", $errmsg );
+            return $c->show_error(
+                'Twitter returned error response... Please try again later...');
+        },
+    },
+);
+sub session_member {
+    my $c = shift;
+    if (my $member_id = $c->session->get('member_id')) {
+        return $c->db->single(member => {id => $member_id});
+    } else {
+        return;
+    }
+}
+
+sub show_error {
+    my ($c, $msg, $code) = @_;
+    my $res = $c->render('error.tt', {message => $msg});
+    $res->code($code || 500);
+    return $res;
+}
 
 # for your security
 __PACKAGE__->add_trigger(

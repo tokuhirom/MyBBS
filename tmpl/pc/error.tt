@@ -1,0 +1,7 @@
+[% WRAPPER 'include/layout.tt' %]
+
+<div class="alert-message error">
+    Error: [% message %]
+</div>
+
+[% END %]
